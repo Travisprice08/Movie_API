@@ -7,8 +7,9 @@ const fs = require('fs');
 const server = http.createServer(function (request, response) {
     
     //const urlObject = url.parse(req.url, true);
-    const q = url.parse(addr, true);
     const addr = request.url;
+    const q = url.parse(addr, true);
+    
     //const fileName = "." + urlObject.pathname;
     
     fs.readFile(addr, function(err, data) {
