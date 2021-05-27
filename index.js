@@ -1,28 +1,30 @@
+const express = require('express'),
+    bodyParser = require('body-parser'),
+    uuid = require('uuid');
+
+const morgan = require('morgan');
+const app = express();
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
 const Directors = Models.Director;
-const Genre = Models.Genre;
+const Genres = Models.Genre;
 
-mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { useNewUrlParser: true, useUnifiedTopology: true });
-
-
-const express = require('express'),
-    bodyParser = require('body-parser'),
-    morgan = require('morgan'),
-    uuid = require('uuid');
-
-const app = express();
+mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true 
+});
 
 app.use(bodyParser.json());
 
+//Logs requests to server
 app.use(morgan('common'));
 
 //Get Requests
 app.get('/', (req,res) => {
-    res.send('Welcome to my top 5 favorite movies!');
+    res.send('Welcome to MyFlix!');
 });
 //Gets the list data of all movies 
 app.get('/movies', (req, res) => {
@@ -36,9 +38,9 @@ app.get('/movies', (req, res) => {
     });
 });
 //Gets list data of a specific movie title
-app.get('/movies/:Movies', (req, res) => {
-    Movies.findOne({ Movie: req.params.Movie })
-    .then((user) => {
+app.get('/movies/:Title', (req, res) => {
+    Movies.findOne({ Title: req.params.Title })
+    .then((movie) => {
         res.json(movie);
     })
     .catch((err) => {
@@ -47,10 +49,10 @@ app.get('/movies/:Movies', (req, res) => {
     });
 });
 //Gets list data on movie genre
-app.get('/genres', (req, res) => {
-    Genres.find()
-    .then((genres) => {
-        res.status(201).json(genres);
+app.get('/genre/:Name', (req, res) => {
+    Genres.findOne({ Name: req.params.Name })
+    .then((genre) => {
+        res.json(genre.Description);
     })
     .catch((err) => {
         console.error(err);
@@ -58,10 +60,10 @@ app.get('/genres', (req, res) => {
     });
 });
 //Gets information on the director
-app.get('/directors', (req, res) => {
-    Directors.find()
-    .then((genres) => {
-        res.status(201).json(directors);
+app.get('/director/:Name', (req, res) => {
+    Directors.findOne({ Name: req.params.Name})
+    .then((director) => {
+        res.json(director);
     })
     .catch((err) => {
         console.error(err);
@@ -215,11 +217,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
-/*app.listen(5000, () => {
-    console.log('Your app is running on Port 5000.');
-});*/
+app.listen(5000, () => console.log('Your app is running on Port 5000.'));
 
-const port = process.env.PORT || 5000;
-app.listen(port, '0.0.0.0',() => {
-    console.log('Listening on Port ' + port);
-});
+
+
