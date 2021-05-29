@@ -2,6 +2,9 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     uuid = require('uuid');
 
+/*const passport = require('passport');
+require('./passport');*/
+
 const morgan = require('morgan');
 const app = express();
 const mongoose = require('mongoose');
@@ -10,7 +13,7 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 const Directors = Models.Director;
-const Genres = Models.Genre;
+const Genres = Models.Genre;   
 
 mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { 
     useNewUrlParser: true, 
@@ -18,6 +21,8 @@ mongoose.connect('mongodb://localhost:27017/[myFlixDB]', {
 });
 
 app.use(bodyParser.json());
+
+//let auth = require('./auth')(app);
 
 //Logs requests to server
 app.use(morgan('common'));
@@ -49,10 +54,10 @@ app.get('/movies/:Title', (req, res) => {
     });
 });
 //Gets list data on movie genre
-app.get('/genre/:Name', (req, res) => {
+app.get('/genres', (req, res) => {
     Genres.findOne({ Name: req.params.Name })
     .then((genre) => {
-        res.json(genre.Description);
+        res.json(genre);
     })
     .catch((err) => {
         console.error(err);
@@ -60,7 +65,7 @@ app.get('/genre/:Name', (req, res) => {
     });
 });
 //Gets information on the director
-app.get('/director/:Name', (req, res) => {
+app.get('/directors', (req, res) => {
     Directors.findOne({ Name: req.params.Name})
     .then((director) => {
         res.json(director);
