@@ -20,7 +20,12 @@ const Users = Models.User;
 const Directors = Models.Director;
 const Genres = Models.Genre;   
 
-mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { 
+/*mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true 
+});*/
+
+mongoose.connect( process.env.CONNECTION_URI, { 
     useNewUrlParser: true, 
     useUnifiedTopology: true 
 });
@@ -198,8 +203,23 @@ app.get('/users/:Username',
 }*/
 app.put('/users/:Username', 
     //Requires validation code
-    passport.authenticate('jwt', { session: false }), 
-    (req, res) => {
+    passport.authenticate('jwt', { session: false }),
+    [
+        check('Username', 'Username is required').isLength({min: 5}),
+        check('Username', 'Username contains no alphanumeric characters - not allowed.').isAlphanumeric(),
+        check('Password', 'Password is required').not().isEmpty(),
+        check('Email', 'Email does not appear to be valid').isEmail()
+    ],  (req, res) => {
+
+           //Check the validation object for errors
+           let errors = validationResult(req);
+
+           if (!error.isEmpty()) {
+               return res.status(422).json({ errors : errors.array() });
+           }
+   
+       let hashedPassword = Users.hashedPassword(req.body.Password);
+
     Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
         {
             Username: req.body.Username,
