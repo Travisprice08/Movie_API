@@ -1,5 +1,4 @@
 const cors = require('cors');
-app.use(cors());
 
 const { check, validationResults } = require('express-validator');
 
@@ -31,6 +30,8 @@ mongoose.connect( process.env.CONNECTION_URI, {
 });
 
 app.use(bodyParser.json());
+
+app.use(cors());
 
 let auth = require('./auth')(app);
 
