@@ -1,23 +1,19 @@
-const cors = require('cors');
+const express = require('express'),
+    morgan = require('morgan'),
+    mongoose = require('mongoose'),
+    Models = require('./models.js'),
+    bodyParser = require('body-parser'),
+    passport = require('passport'),
+    cors = require('cors');
 
-const { check, validationResults } = require('express-validator');
-
-const passport = require('passport');
 require('./passport');
 
-const express = require('express'),
-    bodyParser = require('body-parser'),
-    uuid = require('uuid');
-
-const morgan = require('morgan');
-const app = express();
-const mongoose = require('mongoose');
-const Models = require('./models.js');
+const { check, validationResult } = require('express-validator');
 
 const Movies = Models.Movie;
 const Users = Models.User;
 const Directors = Models.Director;
-const Genres = Models.Genre;   
+const Genres = Models.Genre; 
 
 /*mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { 
     useNewUrlParser: true, 
@@ -29,11 +25,13 @@ mongoose.connect( process.env.CONNECTION_URI, {
     useUnifiedTopology: true 
 });
 
+const app = express();
+
 app.use(bodyParser.json());
 
-app.use(cors());
-
 let auth = require('./auth')(app);
+
+app.use(cors()); 
 
 //Logs requests to server
 app.use(morgan('common'));
@@ -42,6 +40,9 @@ app.use(morgan('common'));
 app.get('/', (req,res) => {
     res.send('Welcome to MyFlix!');
 });
+
+app.use(express.static('public'));
+
 //Gets the list data of all movies 
 app.get('/movies', 
     passport.authenticate('jwt', { session: false}), 
@@ -112,61 +113,45 @@ app.get(
 );
 
 //Registration for new users
-/* We will expect JSON in this format
-{
-    ID: Integer,
-    Username: String,
-    Password: String,
-    Email: String,
-    Birthday: Date
-}*/
-app.post('/users', 
 
-    [
+app.post('/users', [
         check('Username', 'Username is required').isLength({min: 5}),
         check('Username', 'Username contains no alphanumeric characters - not allowed.').isAlphanumeric(),
         check('Password', 'Password is required').not().isEmpty(),
-        check('Email', 'Email does not appear to be valid').isEmail()
-    ], (req, res) => {
+        check('Email', 'Email does not appear to be valid').isEmail()], (req, res) => {
 
         //Check the validation object for errors
         let errors = validationResult(req);
-
-        if (!error.isEmpty()) {
-            return res.status(422).json({ errors : errors.array() });
-        }
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        };
 
     //passport.authenticate('jwt', { session: false }), 
-    let hashedPassword = Users.hashedPassword(req.body.Password);
-    Users.findOne({Username: req.body.Username})
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    Users.findOne({ Username: req.body.Username})
     .then((user) => {
         if (user) {
             return res.status(400).send(req.body.Username + 'already exists');
         } else {
-            Users
-               .create({
+            Users.create({
                    Username: req.body.Username,
                    Password: hashedPassword,
                    Email: req.body.Email,
                    Birthday: req.body.Birthday
-               })
-               .then((user) =>{res.status(201).json(user) })
+               }).then((user) => {res.status(201).json(user) })
                .catch((error) => {
                   console.error(error);
                   res.status(500).send('Error: ' + error);
-              }); 
+              }) 
         }
-    })
-    .catch((error) => {
+    }).catch((error) => {
         console.error(error);
-        res.status(500).send('Error ' + error);
+        res.status(500).send('Error: ' + error);
     });
 });
 
 //Get all users
-app.get('/users',
-    passport.authenticate('jwt', { session: false }), 
-    (req, res) => {
+app.get('/users', (req, res) => {
     Users.find()
     .then((users) => {
         res.status(201).json(users);
@@ -178,9 +163,7 @@ app.get('/users',
 });
 
 //Get user by username
-app.get('/users/:Username', 
-    passport.authenticate('jwt', { session: false }), 
-    (req, res) => {
+app.get('/users/:Username', (req, res) => {
     Users.findOne({ Username: req.params.Username })
     .then ((user) => {
         res.json(user);
@@ -192,16 +175,7 @@ app.get('/users/:Username',
 });
 
 //Update user info by Username
-/*Expected JSON format
-{
-    Username: String,
-    (required)
-    Password: String,
-    (required)
-    Email: String,
-    (required)
-    Birthday: Date
-}*/
+
 app.put('/users/:Username', 
     //Requires validation code
     passport.authenticate('jwt', { session: false }),
@@ -219,24 +193,21 @@ app.put('/users/:Username',
                return res.status(422).json({ errors : errors.array() });
            }
    
-       let hashedPassword = Users.hashedPassword(req.body.Password);
+       let hashedPassword = Users.hashPassword(req.body.Password);
 
     Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
         {
             Username: req.body.Username,
-            Password: req.body.Password,
+            Password: hashedPassword,
             Email: req.body.Email,
             Birthday: req.body.Birthday
         }
     },
-    { new: true }, //This line makes sure that the updated document is returned
-    (err, updatedUser) => {
-        if(err) {
-            console.error(err);
-            res.status(500).send( 'Error: ' + err);
-        } else {
-            res.json(updatedUser);
-        }
+    { new: true }).then((updatedUser) => {
+        res.json(updatedUser);
+    }).catch((err) => {
+        console.error(err);
+        res.status(500).send( 'Error: ' + err);
     });
 });
 
@@ -296,7 +267,7 @@ app.delete('/users/:Username',
 app.get('/logged', (req,res) => {
     res.send('These are the data logs.')
 })
-app.use(express.static('public'));
+
 //Logs errors
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -305,10 +276,11 @@ app.use((err, req, res, next) => {
 
 //app.listen(5000, () => console.log('Your app is running on Port 5000.'));
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
     console.log('Listening on Port ' + port);
 });
+
 
 
 
