@@ -15,23 +15,37 @@ const Users = Models.User;
 const Directors = Models.Director;
 const Genres = Models.Genre;
 
-/*mongoose.connect('mongodb://localhost:27017/[myFlixDB]', { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true 
+/*mongoose.connect('mongodb://localhost:27017/[myFlixDB]', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });*/
 
+
+//Connected 
 mongoose.connect(process.env.CONNECTION_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
 const app = express();
-
+app.use(cors());
 app.use(bodyParser.json());
 
 let auth = require('./auth')(app);
 
-app.use(cors());
+
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234', 'https://myfilmdb.herokuapp.com'];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) { // If a specific origin isn’t found on the list of allowed origins
+            let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+            return callback(new Error(message), false);
+        }
+        return callback(null, true);
+    }
+}));
 
 //Logs requests to server
 app.use(morgan('common'));
@@ -45,17 +59,17 @@ app.use(express.static('public'));
 
 //Gets the list data of all movies 
 /*app.get('/movies',
-    passport.authenticate('jwt', { session: false}), 
+    passport.authenticate('jwt', { session: false }),
     (req, res) => {
-    Movies.find()
-    .then((movies) => {
-        res.status(201).json(movies);
-    })
-    .catch((err) => {
-        console.error(err);
-        res.status(500).send('Error ' + err);
-    });
-});*/
+        Movies.find()
+            .then((movies) => {
+                res.status(201).json(movies);
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(500).send('Error ' + err);
+            });
+    });*/
 
 // Temp removal of authentication middleware
 app.get("/movies", function (req, res) {
