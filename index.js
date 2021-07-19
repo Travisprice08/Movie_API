@@ -26,13 +26,12 @@ mongoose.connect(process.env.CONNECTION_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
-let auth = require('./auth')(app);
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-
+let auth = require('./auth')(app);
 
 
 /*let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234', 'https://myfilmdb.herokuapp.com'];
