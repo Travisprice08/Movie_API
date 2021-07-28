@@ -1,0 +1,2 @@
+{"_id":{"$oid":"60a723a3a09f183d7c96bb41"},"Username":"TravisP08","Password":"Password1!","Email":"TravisP08@Example.com","Birthay":"1990-01-19","FavoriteMovies":[{"$oid":"60a72135a09f183d7c96bb37"},{"$oid":"60a72171a09f183d7c96bb38"},{"$oid":"60a72198a09f183d7c96bb39"}]}
+{"_id":{"$oid":"60a72ad0a09f183d7c96bb45"},"Username":"KimN94","Password":"Tato-po17","Email":"KimN94@Example.com","Birthday":"1994-07-14","FavoriteMovies":[{"$oid":"60a72135a09f183d7c96bb37"},{"$oid":"60a72267a09f183d7c96bb3d"},{"$oid":"60a72283a09f183d7c96bb3e"}]}
