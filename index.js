@@ -35,7 +35,6 @@ let auth = require('./auth')(app);
 
 
 /*let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234', 'https://myfilmdb.herokuapp.com'];
-
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
@@ -111,8 +110,8 @@ app.get('/genres',
     });
 //Gets list of directors
 app.get('/directors',
-    passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    //passport.authenticate('jwt', { session: false }),
+    function (req, res) {
         Directors.find()
             .then((directors) => {
                 res.json(directors);
@@ -308,7 +307,3 @@ const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
     console.log('Listening on Port ' + port);
 });
-
-
-
-

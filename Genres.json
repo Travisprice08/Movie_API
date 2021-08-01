@@ -1,0 +1,4 @@
+{"_id":{"$oid":"60ad67ee365bd4e8beb43343"},"Name":"Crime","Description":"Crime films, in the broadest sense, is a film genre inspired by and analogous to the crime fiction literary genre. Films of this genre generally involve various aspects of crime and its detection."}
+{"_id":{"$oid":"60ad67fa365bd4e8beb43344"},"Name":"Drama","Description":"In film and television, drama is a category of narrative fiction (or semi-fiction) intended to be more serious than humorous in tone."}
+{"_id":{"$oid":"60ad680c365bd4e8beb43345"},"Name":"Thriller","Description":"Thriller film, also known as suspense film or suspense thriller, is a broad film genre that evokes excitement and suspense in the audience."}
+{"_id":{"$oid":"60ad6819365bd4e8beb43346"},"Name":"Sport","Description":"A sports film is a film genre that uses sport as the theme of the film."}
