@@ -110,7 +110,7 @@ app.get(
 
 //Gets information for a specified genre by id
 app.get(
-    "/genres/:id",
+    "/genres/id/:id",
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         Genres.findOne({ _id: req.params.id })
@@ -155,12 +155,12 @@ app.get(
 
 //Gets information for a specified director by id
 app.get(
-    "/directors/:id",
+    "/directors/id/:id",
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         Directors.findOne({ _id: req.params.id })
-            .then((directors) => {
-                res.status(201).json(directors);
+            .then((director) => {
+                res.status(201).json(director);
             })
             .catch((err) => {
                 console.error(err);
