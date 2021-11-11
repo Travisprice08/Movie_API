@@ -37,13 +37,25 @@ app.use(cors({
 }));*/
 //Logs requests to server
 app.use(morgan('common'));
-//Get Requests
+/**
+ * Get the Welcome Page
+ * @method Get
+ * @param {string} endpoint - This is the endpoint for the welcome page. "Url/"
+ * @returns {object} - returns Welcome Page
+ */
+
 app.get('/', (req, res) => {
     res.send('Welcome to MyFlix!');
 });
 app.use(express.static('public'));
-//Gets the list data of all movies 
-/*app.get('/movies',
+
+/**
+ * Get All Movies
+ * @method Get
+ * @params {string} endpoint - The endpoint to return all movies
+ * @returns {object} - returns movie objects
+ */
+app.get('/movies',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         Movies.find()
@@ -54,19 +66,27 @@ app.use(express.static('public'));
                 console.error(err);
                 res.status(500).send('Error ' + err);
             });
-    });*/
-// Temp removal of authentication middleware
-app.get("/movies", function (req, res) {
-    Movies.find()
-        .then(function (movies) {
-            res.status(201).json(movies);
-        })
-        .catch(function (error) {
-            console.error(error);
-            res.status(500).send("Error: " + error);
-        });
-});
-//Gets list data of a specific movie title
+    });
+
+// Temp removal of authentication middleware for testing
+// app.get("/movies", function (req, res) {
+//     Movies.find()
+//         .then(function (movies) {
+//             res.status(201).json(movies);
+//         })
+//         .catch(function (error) {
+//             console.error(error);
+//             res.status(500).send("Error: " + error);
+//         });
+// });
+
+/**
+ * Get movie by title
+ * @method Get
+ * @param {string} endpoint - The endpoint gets movie by title
+ * @param {string} Title - used to specify which movie to retrieve
+ * @returns {object} - This returns the title specific movie
+ */
 app.get('/movies/:Title',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
@@ -79,7 +99,12 @@ app.get('/movies/:Title',
                 res.status(500).send('Error ' + err);
             });
     });
-//Gets list of movie genres
+/**
+ * Get list of all genres
+ * @method Get
+ * @param {string} endpoint - This is the endpoint to list all genres. "url/genres"
+ * @returns {object} Returns a list of all genres
+ */
 app.get('/genres',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
@@ -92,7 +117,13 @@ app.get('/genres',
                 res.status(500).send('Error ' + err);
             });
     });
-//Gets information for a specified genre
+/**
+ * Get genre by name
+ * @method Get
+ * @param {string} endpoint - Fetches genre by name
+ * @param {string} name - Specifies which genre by name. "url/genres/:name"
+ * @return {object} Returns specified genre
+ */
 app.get(
     "/genres/:name",
     passport.authenticate('jwt', { session: false }),
@@ -108,7 +139,13 @@ app.get(
     }
 );
 
-//Gets information for a specified genre by id
+/**
+ * Get genre by id
+ * @method Get
+ * @param {string} endpoint - Fetches genre by id
+ * @param {string} id - Specifies which genre by id. "url/genres/id/:id"
+ * @return {object} Returns specified genre
+ */
 app.get(
     "/genres/id/:id",
     passport.authenticate('jwt', { session: false }),
@@ -124,7 +161,24 @@ app.get(
     }
 );
 
-//Gets list of directors
+//Temp removal of authentication middleware for testing
+// app.get("/genres/id/:id", function (req, res) {
+//     Genres.findOne({ _id: req.params.id })
+//         .then((genres) => {
+//             res.status(201).json(genres);
+//         })
+//         .catch(function (error) {
+//             console.error(error);
+//             res.status(500).send("Error: " + error);
+//         });
+// });
+
+/**
+ * Get list of all directors
+ * @method Get
+ * @param {string} endpoint - Fetches list of directors. "url/directors"
+ * @return {object} Returns list of directors
+ */
 app.get('/directors',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
@@ -137,7 +191,13 @@ app.get('/directors',
                 res.status(500).send('Error ' + err);
             });
     });
-//Gets information for a specified director
+/**
+ * Get director by name
+ * @method Get
+ * @param {string} endpoint - Fetches director by name
+ * @param {string} name - Specifies which director by name. "url/directors/:name"
+ * @return {object} Returns specified director
+ */
 app.get(
     "/directors/:name",
     passport.authenticate('jwt', { session: false }),
@@ -153,7 +213,13 @@ app.get(
     }
 );
 
-//Gets information for a specified director by id
+/**
+ * Get director by id
+ * @method Get
+ * @param {string} endpoint - Fetches director by id
+ * @param {string} name - Specifies which director by id. "url/directors/id/:id"
+ * @return {object} Returns specified director
+ */
 app.get(
     "/directors/id/:id",
     passport.authenticate('jwt', { session: false }),
@@ -169,7 +235,15 @@ app.get(
     }
 );
 
-//Registration for new users
+/**
+ * Registration for new users
+ * @method POST
+ * @param {string} endpoint - endpoint for user registration. "url/users"
+ * @param {string} Username - Username chosen by user
+ * @param {string} Password - Password chosen by user
+ * @param {Email} Email - Users email address
+ * @returns {object} -New User
+ */
 app.post('/users', [
     check('Username', 'Username is required').isLength({ min: 5 }),
     check('Username', 'Username contains no alphanumeric characters - not allowed.').isAlphanumeric(),
@@ -203,7 +277,12 @@ app.post('/users', [
                 res.status(500).send('Error: ' + error);
             });
     });
-//Get all users
+/**
+ * Get all users
+ * @method Get
+ * @param {string} endpoint - endpoint used to fetch all users. "url/users"
+ * @returns {object} - Returns all users
+ */
 app.get('/users', (req, res) => {
     Users.find()
         .then((users) => {
@@ -214,7 +293,13 @@ app.get('/users', (req, res) => {
             res.status(500).send('Error: ' + err);
         });
 });
-//Get user by username
+/**
+ * Get user by username
+ * @method Get
+ * @param {string} endpoint - endpoint to fetch user by username
+ * @param {string} Username - used to get specific user. "url/users/:Username"
+ * @returns {object} - returns specified user
+ */
 app.get('/users/:Username', (req, res) => {
     Users.findOne({ Username: req.params.Username })
         .then((user) => {
@@ -225,7 +310,15 @@ app.get('/users/:Username', (req, res) => {
             res.status(500).send('Error: ' + err);
         });
 });
-//Update user info by Username
+/**
+ * Update user info by Username
+ * @method put
+ * @param {string} endpoint - endpount to fetch user
+ * @param {string} Username - Users username (Required)
+ * @param {string} Password - Updated user password
+ * @param {Email} Email - New email
+ * @returns {string} - Returns success or error message
+ */
 app.put('/users/:Username',
     //Requires validation code
     passport.authenticate('jwt', { session: false }),
@@ -257,7 +350,13 @@ app.put('/users/:Username',
                 res.status(500).send('Error: ' + err);
             });
     });
-//Allows you to add a movie to the list
+/**
+ * Allows you to add a movie to the list
+ * @method Post
+ * @param {string} endpoint - endpoint used to add a movie to favorites
+ * @param {string} Title and Username- (Required)
+ * @returns {string} - Returns success or error message
+ */
 app.post('/users/:Username/Movies/:MovieID',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
@@ -274,7 +373,13 @@ app.post('/users/:Username/Movies/:MovieID',
                 }
             });
     });
-//Removes movies from list
+/**
+ * Removes movies from list
+ * @method delete
+ * @param {string} endpoint - endpoint used to remove movie from favorites
+ * @param {string} Title and Username -(Required)
+ * @returns {string} - Returns success or error message
+ */
 app.delete('/users/:Username/Movies/:MovieID',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
@@ -291,7 +396,13 @@ app.delete('/users/:Username/Movies/:MovieID',
                 }
             });
     });
-//Deleting user by username
+/**
+ * Deleting user by username
+ * @method delete
+ * @param {string} endpoint - endpoint used to get user
+ * @param {string} Username - Used to specifiy user. "Url/user/:Username"
+ * @returns {string} - Returns success or error message
+ */
 app.delete('/users/:Username',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
